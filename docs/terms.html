@@ -13,6 +13,9 @@
       --muted: #6b7280;
       --border: #e5e7eb;
       --link: #2563eb;
+      --chip: #eef2ff;
+      --chip-active: #111827;
+      --chip-active-text: #ffffff;
     }
     * { box-sizing: border-box; }
     body {
@@ -27,22 +30,53 @@
       margin: 0 auto;
       padding: 32px 0 56px;
     }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
+    .top-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      align-items: center;
     }
     .top-nav {
       display: flex;
       gap: 14px;
       flex-wrap: wrap;
-      margin-bottom: 18px;
     }
     .top-nav a {
       color: var(--link);
       text-decoration: none;
       font-weight: 600;
+    }
+    .lang-switch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .lang-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .lang-btn {
+      border: 1px solid var(--border);
+      background: var(--chip);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .lang-btn.active {
+      background: var(--chip-active);
+      color: var(--chip-active-text);
+      border-color: var(--chip-active);
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
     }
     h1 { margin: 0 0 12px; font-size: clamp(1.65rem, 3vw, 2.1rem); }
     h2 { margin: 20px 0 8px; font-size: 1.1rem; }
@@ -55,79 +89,263 @@
       font-size: 0.92rem;
     }
     a { color: var(--link); }
+    @media (max-width: 720px) {
+      .lang-label { width: 100%; }
+    }
   </style>
 </head>
 <body>
   <main class="container">
-    <nav class="top-nav" aria-label="Legal and support links">
-      <a href="index.html">Support</a>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms of Use</a>
-    </nav>
+    <div class="top-row">
+      <nav class="top-nav" aria-label="Legal and support links">
+        <a data-nav="index.html" data-nav-key="navSupport"></a>
+        <a data-nav="privacy.html" data-nav-key="navPrivacy"></a>
+        <a data-nav="terms.html" data-nav-key="navTerms" aria-current="page"></a>
+      </nav>
+      <div class="lang-switch">
+        <span class="lang-label" id="lang-label"></span>
+        <button type="button" class="lang-btn" data-lang-btn="en">English</button>
+        <button type="button" class="lang-btn" data-lang-btn="zh-Hans">简体中文</button>
+        <button type="button" class="lang-btn" data-lang-btn="zh-Hant">繁體中文</button>
+      </div>
+    </div>
 
     <section class="card">
-      <h1>Terms of Use</h1>
-      <p class="muted">
-        Effective date: February 24, 2026
-      </p>
-
-      <h2>1. Agreement to Terms</h2>
-      <p>
-        By downloading or using RentDue (the "App"), you agree to these Terms of Use. If you do not agree, do not use the App.
-      </p>
-
-      <h2>2. App Purpose</h2>
-      <p>
-        RentDue is a tool for landlords and property managers to organize property records, leases, receivables, and related documents.
-      </p>
-
-      <h2>3. License</h2>
-      <p>
-        We grant you a limited, non-exclusive, non-transferable, revocable license to use the App for personal or internal business use, in accordance with these Terms and applicable law.
-      </p>
-
-      <h2>4. Acceptable Use</h2>
-      <ul>
-        <li>You are responsible for the accuracy and legality of information you enter into the App.</li>
-        <li>You agree not to misuse the App, reverse engineer it where prohibited, or interfere with normal operation.</li>
-        <li>You agree not to use the App for unlawful or fraudulent activities.</li>
-      </ul>
-
-      <h2>5. Data and Backups</h2>
-      <p>
-        App data is primarily stored locally on your device. You are responsible for maintaining your own backups through your device or account settings.
-      </p>
-
-      <h2>6. No Professional Advice</h2>
-      <p>
-        The App is provided for organizational purposes and does not provide legal, tax, accounting, or financial advice.
-      </p>
-
-      <h2>7. Disclaimer of Warranties</h2>
-      <p>
-        The App is provided "as is" and "as available," without warranties of any kind to the maximum extent permitted by law.
-      </p>
-
-      <h2>8. Limitation of Liability</h2>
-      <p>
-        To the maximum extent permitted by law, we are not liable for indirect, incidental, special, consequential, or punitive damages, or loss of profits, data, or goodwill arising from your use of the App.
-      </p>
-
-      <h2>9. Changes to the App or Terms</h2>
-      <p>
-        We may update the App and these Terms from time to time. Continued use of the App after updates means you accept the revised Terms.
-      </p>
-
-      <h2>10. Contact</h2>
-      <p>
-        Questions about these Terms can be sent to:
-        <a href="mailto:support@rentdue.app">support@rentdue.app</a>
-      </p>
-
-      <footer>
-        RentDue / RentCollect by NewTree
-      </footer>
+      <h1 id="title"></h1>
+      <p class="muted" id="effective-date"></p>
+      <div id="content"></div>
+      <footer id="footer"></footer>
     </section>
+    <noscript>
+      JavaScript is required for language switching. This page supports English, Simplified Chinese, and Traditional Chinese.
+    </noscript>
   </main>
+
+  <script>
+    const CONTENT = {
+      "en": {
+        headTitle: "RentDue Terms of Use",
+        navSupport: "Support",
+        navPrivacy: "Privacy Policy",
+        navTerms: "Terms of Use",
+        languageLabel: "Language:",
+        title: "Terms of Use",
+        effectiveDate: "Effective date: February 24, 2026",
+        body: `
+          <h2>1. Agreement to Terms</h2>
+          <p>By downloading or using RentDue (the "App"), you agree to these Terms of Use. If you do not agree, do not use the App.</p>
+
+          <h2>2. App Purpose</h2>
+          <p>RentDue is a tool for landlords and property managers to organize property records, leases, receivables, and related documents.</p>
+
+          <h2>3. License</h2>
+          <p>We grant you a limited, non-exclusive, non-transferable, revocable license to use the App for personal or internal business use, in accordance with these Terms and applicable law.</p>
+
+          <h2>4. Acceptable Use</h2>
+          <ul>
+            <li>You are responsible for the accuracy and legality of information you enter into the App.</li>
+            <li>You agree not to misuse the App, reverse engineer it where prohibited, or interfere with normal operation.</li>
+            <li>You agree not to use the App for unlawful or fraudulent activities.</li>
+          </ul>
+
+          <h2>5. Data and Backups</h2>
+          <p>App data is primarily stored locally on your device. You are responsible for maintaining your own backups through your device or account settings.</p>
+
+          <h2>6. No Professional Advice</h2>
+          <p>The App is provided for organizational purposes and does not provide legal, tax, accounting, or financial advice.</p>
+
+          <h2>7. Disclaimer of Warranties</h2>
+          <p>The App is provided "as is" and "as available," without warranties of any kind to the maximum extent permitted by law.</p>
+
+          <h2>8. Limitation of Liability</h2>
+          <p>To the maximum extent permitted by law, we are not liable for indirect, incidental, special, consequential, or punitive damages, or loss of profits, data, or goodwill arising from your use of the App.</p>
+
+          <h2>9. Changes to the App or Terms</h2>
+          <p>We may update the App and these Terms from time to time. Continued use of the App after updates means you accept the revised Terms.</p>
+
+          <h2>10. Contact</h2>
+          <p>Questions about these Terms can be sent to: <a href="mailto:support@rentdue.app">support@rentdue.app</a></p>
+        `,
+        footer: "RentDue / RentCollect by NewTree"
+      },
+      "zh-Hans": {
+        headTitle: "RentDue 服务条款",
+        navSupport: "技术支持",
+        navPrivacy: "隐私政策",
+        navTerms: "服务条款",
+        languageLabel: "语言：",
+        title: "服务条款",
+        effectiveDate: "生效日期：2026 年 2 月 24 日",
+        body: `
+          <h2>1. 条款同意</h2>
+          <p>下载、安装或使用 RentDue（以下简称“本应用”）即表示你同意本条款。若你不同意，请停止使用本应用。</p>
+
+          <h2>2. 应用用途</h2>
+          <p>RentDue 用于帮助房东和物业管理者管理房产记录、租约、应收款及相关合同文件。</p>
+
+          <h2>3. 使用许可</h2>
+          <p>在你遵守本条款和适用法律的前提下，我们授予你有限的、非独占、不可转让、可撤销的许可，用于个人或内部业务目的使用本应用。</p>
+
+          <h2>4. 合理使用</h2>
+          <ul>
+            <li>你需对在应用中录入信息的准确性和合法性负责。</li>
+            <li>你不得滥用本应用，不得在法律禁止时进行逆向工程，也不得干扰应用正常运行。</li>
+            <li>你不得将本应用用于任何违法或欺诈活动。</li>
+          </ul>
+
+          <h2>5. 数据与备份</h2>
+          <p>应用数据主要保存在你的设备本地。你需自行通过设备或账号设置维护备份。</p>
+
+          <h2>6. 非专业建议</h2>
+          <p>本应用仅提供信息整理与管理功能，不构成法律、税务、会计或金融建议。</p>
+
+          <h2>7. 免责声明</h2>
+          <p>在法律允许的最大范围内，本应用按“现状”和“可用性”提供，不提供任何形式的明示或默示担保。</p>
+
+          <h2>8. 责任限制</h2>
+          <p>在法律允许的最大范围内，我们不对因使用本应用导致的任何间接、附带、特殊、后果性或惩罚性损失负责，包括利润、数据或商誉损失。</p>
+
+          <h2>9. 变更</h2>
+          <p>我们可能不时更新本应用或本条款。更新后继续使用本应用即表示你接受修订后的条款。</p>
+
+          <h2>10. 联系我们</h2>
+          <p>如对本条款有疑问，请发送邮件至：<a href="mailto:support@rentdue.app">support@rentdue.app</a></p>
+        `,
+        footer: "RentDue / RentCollect by NewTree"
+      },
+      "zh-Hant": {
+        headTitle: "RentDue 服務條款",
+        navSupport: "技術支援",
+        navPrivacy: "隱私政策",
+        navTerms: "服務條款",
+        languageLabel: "語言：",
+        title: "服務條款",
+        effectiveDate: "生效日期：2026 年 2 月 24 日",
+        body: `
+          <h2>1. 條款同意</h2>
+          <p>下載、安裝或使用 RentDue（以下簡稱「本 App」）即表示你同意本條款。若你不同意，請停止使用本 App。</p>
+
+          <h2>2. App 用途</h2>
+          <p>RentDue 用於協助房東與物業管理者管理房產紀錄、租約、應收款與相關合約文件。</p>
+
+          <h2>3. 使用授權</h2>
+          <p>在你遵守本條款與適用法律的前提下，我們授予你有限、非專屬、不可轉讓、可撤銷的授權，供個人或內部業務使用本 App。</p>
+
+          <h2>4. 合理使用</h2>
+          <ul>
+            <li>你需對在 App 中輸入資訊的正確性與合法性負責。</li>
+            <li>你不得濫用本 App，不得於法律禁止時進行逆向工程，也不得干擾正常運作。</li>
+            <li>你不得將本 App 用於任何違法或詐欺活動。</li>
+          </ul>
+
+          <h2>5. 資料與備份</h2>
+          <p>App 資料主要儲存在你的裝置本地。你需自行透過裝置或帳號設定維護備份。</p>
+
+          <h2>6. 非專業建議</h2>
+          <p>本 App 僅提供資料整理與管理功能，不構成法律、稅務、會計或金融建議。</p>
+
+          <h2>7. 免責聲明</h2>
+          <p>在法律允許的最大範圍內，本 App 依「現況」與「可用」提供，不提供任何明示或默示保證。</p>
+
+          <h2>8. 責任限制</h2>
+          <p>在法律允許的最大範圍內，我們不對因使用本 App 產生的任何間接、附帶、特殊、衍生或懲罰性損害負責，包括利潤、資料或商譽損失。</p>
+
+          <h2>9. 變更</h2>
+          <p>我們可能不定期更新本 App 或本條款。更新後持續使用本 App 即表示你接受修訂內容。</p>
+
+          <h2>10. 聯絡我們</h2>
+          <p>如對本條款有疑問，請寄信至：<a href="mailto:support@rentdue.app">support@rentdue.app</a></p>
+        `,
+        footer: "RentDue / RentCollect by NewTree"
+      }
+    };
+
+    const STORAGE_KEY = "rentdue-site-lang";
+    const SUPPORTED_LANGS = ["en", "zh-Hans", "zh-Hant"];
+
+    function normalizeLang(value) {
+      if (!value) return null;
+      const v = value.toLowerCase();
+      if (v === "en" || v.startsWith("en-")) return "en";
+      if (v === "zh-hans" || v === "zh-cn" || v.startsWith("zh-cn") || v.includes("hans")) return "zh-Hans";
+      if (v === "zh-hant" || v === "zh-tw" || v === "zh-hk" || v.startsWith("zh-tw") || v.startsWith("zh-hk") || v.includes("hant")) return "zh-Hant";
+      return null;
+    }
+
+    function readStoredLang() {
+      try {
+        return normalizeLang(localStorage.getItem(STORAGE_KEY));
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function writeStoredLang(lang) {
+      try {
+        localStorage.setItem(STORAGE_KEY, lang);
+      } catch (error) {
+      }
+    }
+
+    function detectLanguage() {
+      const queryLang = normalizeLang(new URLSearchParams(window.location.search).get("lang"));
+      if (queryLang) return queryLang;
+      const savedLang = readStoredLang();
+      if (savedLang) return savedLang;
+      const browserLang = normalizeLang(navigator.language || "");
+      if (browserLang) return browserLang;
+      return "en";
+    }
+
+    function updateNavigationLinks(lang) {
+      document.querySelectorAll("[data-nav]").forEach((node) => {
+        node.href = node.dataset.nav + "?lang=" + encodeURIComponent(lang);
+      });
+    }
+
+    function updateLanguageButtons(lang) {
+      document.querySelectorAll("[data-lang-btn]").forEach((node) => {
+        node.classList.toggle("active", node.dataset.langBtn === lang);
+      });
+    }
+
+    function render(lang, shouldUpdateUrl) {
+      const resolvedLang = SUPPORTED_LANGS.includes(lang) ? lang : "en";
+      const copy = CONTENT[resolvedLang];
+      document.title = copy.headTitle;
+      document.documentElement.lang = resolvedLang;
+
+      document.getElementById("lang-label").textContent = copy.languageLabel;
+      document.getElementById("title").textContent = copy.title;
+      document.getElementById("effective-date").textContent = copy.effectiveDate;
+      document.getElementById("content").innerHTML = copy.body;
+      document.getElementById("footer").textContent = copy.footer;
+
+      document.querySelectorAll("[data-nav-key]").forEach((node) => {
+        node.textContent = copy[node.dataset.navKey];
+      });
+
+      updateNavigationLinks(resolvedLang);
+      updateLanguageButtons(resolvedLang);
+      writeStoredLang(resolvedLang);
+
+      if (shouldUpdateUrl) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("lang", resolvedLang);
+        window.history.replaceState({}, "", url);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const initialLang = detectLanguage();
+      render(initialLang, true);
+
+      document.querySelectorAll("[data-lang-btn]").forEach((node) => {
+        node.addEventListener("click", () => {
+          render(node.dataset.langBtn, true);
+        });
+      });
+    });
+  </script>
 </body>
 </html>

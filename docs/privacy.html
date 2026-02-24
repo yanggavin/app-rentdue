@@ -13,6 +13,9 @@
       --muted: #6b7280;
       --border: #e5e7eb;
       --link: #2563eb;
+      --chip: #eef2ff;
+      --chip-active: #111827;
+      --chip-active-text: #ffffff;
     }
     * { box-sizing: border-box; }
     body {
@@ -27,22 +30,53 @@
       margin: 0 auto;
       padding: 32px 0 56px;
     }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
+    .top-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      align-items: center;
     }
     .top-nav {
       display: flex;
       gap: 14px;
       flex-wrap: wrap;
-      margin-bottom: 18px;
     }
     .top-nav a {
       color: var(--link);
       text-decoration: none;
       font-weight: 600;
+    }
+    .lang-switch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .lang-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .lang-btn {
+      border: 1px solid var(--border);
+      background: var(--chip);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .lang-btn.active {
+      background: var(--chip-active);
+      color: var(--chip-active-text);
+      border-color: var(--chip-active);
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
     }
     h1 { margin: 0 0 12px; font-size: clamp(1.65rem, 3vw, 2.1rem); }
     h2 { margin: 20px 0 8px; font-size: 1.1rem; }
@@ -55,77 +89,269 @@
       font-size: 0.92rem;
     }
     a { color: var(--link); }
+    @media (max-width: 720px) {
+      .lang-label { width: 100%; }
+    }
   </style>
 </head>
 <body>
   <main class="container">
-    <nav class="top-nav" aria-label="Legal and support links">
-      <a href="index.html">Support</a>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms of Use</a>
-    </nav>
+    <div class="top-row">
+      <nav class="top-nav" aria-label="Legal and support links">
+        <a data-nav="index.html" data-nav-key="navSupport"></a>
+        <a data-nav="privacy.html" data-nav-key="navPrivacy" aria-current="page"></a>
+        <a data-nav="terms.html" data-nav-key="navTerms"></a>
+      </nav>
+      <div class="lang-switch">
+        <span class="lang-label" id="lang-label"></span>
+        <button type="button" class="lang-btn" data-lang-btn="en">English</button>
+        <button type="button" class="lang-btn" data-lang-btn="zh-Hans">简体中文</button>
+        <button type="button" class="lang-btn" data-lang-btn="zh-Hant">繁體中文</button>
+      </div>
+    </div>
 
     <section class="card">
-      <h1>Privacy Policy</h1>
-      <p class="muted">
-        Effective date: February 24, 2026
-      </p>
-
-      <h2>1. Overview</h2>
-      <p>
-        This Privacy Policy describes how RentDue (project name: RentCollect) handles information when you use the app.
-      </p>
-
-      <h2>2. Information Processed in the App</h2>
-      <ul>
-        <li>Property records (name, group, notes, units)</li>
-        <li>Lease records (tenant names, rent amount, dates)</li>
-        <li>Receivables and payment status</li>
-        <li>Contract files and images you import or scan</li>
-      </ul>
-
-      <h2>3. Device Permissions</h2>
-      <ul>
-        <li>Camera: used only to scan contract documents.</li>
-        <li>Photo Library: used only to select property or contract images.</li>
-        <li>Notifications: used only for local rent reminders.</li>
-      </ul>
-
-      <h2>4. Storage and Sync</h2>
-      <p>
-        Core app data is stored locally on your device. If you enable iCloud profile sync, your profile display name and profile photo may sync through your iCloud account settings.
-      </p>
-
-      <h2>5. Tracking and Data Sharing</h2>
-      <p>
-        RentDue does not use cross-app tracking and does not sell personal data. We do not share your data with third-party advertisers.
-      </p>
-
-      <h2>6. Data Retention and Deletion</h2>
-      <p>
-        You can delete records directly within the app. You can remove locally stored data by deleting the app from your device.
-      </p>
-
-      <h2>7. Children's Privacy</h2>
-      <p>
-        RentDue is not directed to children under 13, and we do not knowingly collect personal information from children.
-      </p>
-
-      <h2>8. Policy Updates</h2>
-      <p>
-        We may update this Privacy Policy from time to time. The latest version will be posted on this page.
-      </p>
-
-      <h2>9. Contact</h2>
-      <p>
-        Privacy questions can be sent to:
-        <a href="mailto:support@rentdue.app">support@rentdue.app</a>
-      </p>
-
-      <footer>
-        Last updated: February 24, 2026
-      </footer>
+      <h1 id="title"></h1>
+      <p class="muted" id="effective-date"></p>
+      <div id="content"></div>
+      <footer id="footer"></footer>
     </section>
+    <noscript>
+      JavaScript is required for language switching. This page supports English, Simplified Chinese, and Traditional Chinese.
+    </noscript>
   </main>
+
+  <script>
+    const CONTENT = {
+      "en": {
+        headTitle: "RentDue Privacy Policy",
+        navSupport: "Support",
+        navPrivacy: "Privacy Policy",
+        navTerms: "Terms of Use",
+        languageLabel: "Language:",
+        title: "Privacy Policy",
+        effectiveDate: "Effective date: February 24, 2026",
+        body: `
+          <h2>1. Overview</h2>
+          <p>This Privacy Policy describes how RentDue (project name: RentCollect) handles information when you use the app.</p>
+
+          <h2>2. Information Processed in the App</h2>
+          <ul>
+            <li>Property records (name, group, notes, units)</li>
+            <li>Lease records (tenant names, rent amount, dates)</li>
+            <li>Receivables and payment status</li>
+            <li>Contract files and images you import or scan</li>
+          </ul>
+
+          <h2>3. Device Permissions</h2>
+          <ul>
+            <li>Camera: used only to scan contract documents.</li>
+            <li>Photo Library: used only to select property or contract images.</li>
+            <li>Notifications: used only for local rent reminders.</li>
+          </ul>
+
+          <h2>4. Storage and Sync</h2>
+          <p>Core app data is stored locally on your device. If you enable iCloud profile sync, your profile display name and profile photo may sync through your iCloud account settings.</p>
+
+          <h2>5. Tracking and Data Sharing</h2>
+          <p>RentDue does not use cross-app tracking and does not sell personal data. We do not share your data with third-party advertisers.</p>
+
+          <h2>6. Data Retention and Deletion</h2>
+          <p>You can delete records directly within the app. You can remove locally stored data by deleting the app from your device.</p>
+
+          <h2>7. Children's Privacy</h2>
+          <p>RentDue is not directed to children under 13, and we do not knowingly collect personal information from children.</p>
+
+          <h2>8. Policy Updates</h2>
+          <p>We may update this Privacy Policy from time to time. The latest version will be posted on this page.</p>
+
+          <h2>9. Contact</h2>
+          <p>Privacy questions can be sent to: <a href="mailto:support@rentdue.app">support@rentdue.app</a></p>
+        `,
+        footer: "Last updated: February 24, 2026"
+      },
+      "zh-Hans": {
+        headTitle: "RentDue 隐私政策",
+        navSupport: "技术支持",
+        navPrivacy: "隐私政策",
+        navTerms: "服务条款",
+        languageLabel: "语言：",
+        title: "隐私政策",
+        effectiveDate: "生效日期：2026 年 2 月 24 日",
+        body: `
+          <h2>1. 概述</h2>
+          <p>本隐私政策说明 RentDue（项目名：RentCollect）在你使用应用时如何处理信息。</p>
+
+          <h2>2. 应用中处理的信息</h2>
+          <ul>
+            <li>房产记录（名称、分组、备注、单元）</li>
+            <li>租约记录（租客姓名、租金金额、日期）</li>
+            <li>应收款与收款状态</li>
+            <li>你导入或扫描的合同文件与图片</li>
+          </ul>
+
+          <h2>3. 设备权限</h2>
+          <ul>
+            <li>相机：仅用于扫描合同文件。</li>
+            <li>相册：仅用于选择房产或合同图片。</li>
+            <li>通知：仅用于本地收租提醒。</li>
+          </ul>
+
+          <h2>4. 存储与同步</h2>
+          <p>核心应用数据存储在你的设备本地。若你启用 iCloud 资料同步，头像和昵称可能会根据你的 iCloud 设置进行同步。</p>
+
+          <h2>5. 跟踪与数据共享</h2>
+          <p>RentDue 不进行跨应用跟踪，也不会出售个人数据。我们不会将你的数据共享给第三方广告商。</p>
+
+          <h2>6. 数据保留与删除</h2>
+          <p>你可在应用内删除记录，也可通过卸载应用移除本地数据。</p>
+
+          <h2>7. 儿童隐私</h2>
+          <p>RentDue 不面向 13 岁以下儿童，我们不会主动收集儿童个人信息。</p>
+
+          <h2>8. 政策更新</h2>
+          <p>我们可能不时更新本隐私政策。最新版本将发布在本页面。</p>
+
+          <h2>9. 联系我们</h2>
+          <p>如有隐私相关问题，请联系：<a href="mailto:support@rentdue.app">support@rentdue.app</a></p>
+        `,
+        footer: "最后更新：2026 年 2 月 24 日"
+      },
+      "zh-Hant": {
+        headTitle: "RentDue 隱私政策",
+        navSupport: "技術支援",
+        navPrivacy: "隱私政策",
+        navTerms: "服務條款",
+        languageLabel: "語言：",
+        title: "隱私政策",
+        effectiveDate: "生效日期：2026 年 2 月 24 日",
+        body: `
+          <h2>1. 概述</h2>
+          <p>本隱私政策說明 RentDue（專案名稱：RentCollect）在你使用 App 時如何處理資訊。</p>
+
+          <h2>2. App 中處理的資訊</h2>
+          <ul>
+            <li>房產紀錄（名稱、分組、備註、單元）</li>
+            <li>租約紀錄（租客姓名、租金金額、日期）</li>
+            <li>應收款與收款狀態</li>
+            <li>你匯入或掃描的合約檔案與圖片</li>
+          </ul>
+
+          <h2>3. 裝置權限</h2>
+          <ul>
+            <li>相機：僅用於掃描合約文件。</li>
+            <li>照片：僅用於選擇房產或合約圖片。</li>
+            <li>通知：僅用於本地收租提醒。</li>
+          </ul>
+
+          <h2>4. 儲存與同步</h2>
+          <p>核心 App 資料儲存在你的裝置本地。若你啟用 iCloud 個人資料同步，頭像與顯示名稱可能會依你的 iCloud 設定進行同步。</p>
+
+          <h2>5. 追蹤與資料分享</h2>
+          <p>RentDue 不進行跨 App 追蹤，也不出售個人資料。我們不會將你的資料提供給第三方廣告商。</p>
+
+          <h2>6. 資料保留與刪除</h2>
+          <p>你可在 App 內刪除紀錄，也可透過移除 App 刪除本地資料。</p>
+
+          <h2>7. 兒童隱私</h2>
+          <p>RentDue 不以 13 歲以下兒童為對象，我們不會刻意蒐集兒童個人資訊。</p>
+
+          <h2>8. 政策更新</h2>
+          <p>我們可能不定期更新本隱私政策。最新版本將發布於本頁面。</p>
+
+          <h2>9. 聯絡我們</h2>
+          <p>如有隱私相關問題，請聯絡：<a href="mailto:support@rentdue.app">support@rentdue.app</a></p>
+        `,
+        footer: "最後更新：2026 年 2 月 24 日"
+      }
+    };
+
+    const STORAGE_KEY = "rentdue-site-lang";
+    const SUPPORTED_LANGS = ["en", "zh-Hans", "zh-Hant"];
+
+    function normalizeLang(value) {
+      if (!value) return null;
+      const v = value.toLowerCase();
+      if (v === "en" || v.startsWith("en-")) return "en";
+      if (v === "zh-hans" || v === "zh-cn" || v.startsWith("zh-cn") || v.includes("hans")) return "zh-Hans";
+      if (v === "zh-hant" || v === "zh-tw" || v === "zh-hk" || v.startsWith("zh-tw") || v.startsWith("zh-hk") || v.includes("hant")) return "zh-Hant";
+      return null;
+    }
+
+    function readStoredLang() {
+      try {
+        return normalizeLang(localStorage.getItem(STORAGE_KEY));
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function writeStoredLang(lang) {
+      try {
+        localStorage.setItem(STORAGE_KEY, lang);
+      } catch (error) {
+      }
+    }
+
+    function detectLanguage() {
+      const queryLang = normalizeLang(new URLSearchParams(window.location.search).get("lang"));
+      if (queryLang) return queryLang;
+      const savedLang = readStoredLang();
+      if (savedLang) return savedLang;
+      const browserLang = normalizeLang(navigator.language || "");
+      if (browserLang) return browserLang;
+      return "en";
+    }
+
+    function updateNavigationLinks(lang) {
+      document.querySelectorAll("[data-nav]").forEach((node) => {
+        node.href = node.dataset.nav + "?lang=" + encodeURIComponent(lang);
+      });
+    }
+
+    function updateLanguageButtons(lang) {
+      document.querySelectorAll("[data-lang-btn]").forEach((node) => {
+        node.classList.toggle("active", node.dataset.langBtn === lang);
+      });
+    }
+
+    function render(lang, shouldUpdateUrl) {
+      const resolvedLang = SUPPORTED_LANGS.includes(lang) ? lang : "en";
+      const copy = CONTENT[resolvedLang];
+      document.title = copy.headTitle;
+      document.documentElement.lang = resolvedLang;
+
+      document.getElementById("lang-label").textContent = copy.languageLabel;
+      document.getElementById("title").textContent = copy.title;
+      document.getElementById("effective-date").textContent = copy.effectiveDate;
+      document.getElementById("content").innerHTML = copy.body;
+      document.getElementById("footer").textContent = copy.footer;
+
+      document.querySelectorAll("[data-nav-key]").forEach((node) => {
+        node.textContent = copy[node.dataset.navKey];
+      });
+
+      updateNavigationLinks(resolvedLang);
+      updateLanguageButtons(resolvedLang);
+      writeStoredLang(resolvedLang);
+
+      if (shouldUpdateUrl) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("lang", resolvedLang);
+        window.history.replaceState({}, "", url);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const initialLang = detectLanguage();
+      render(initialLang, true);
+
+      document.querySelectorAll("[data-lang-btn]").forEach((node) => {
+        node.addEventListener("click", () => {
+          render(node.dataset.langBtn, true);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
