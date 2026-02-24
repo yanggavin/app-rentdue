@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RentDue Support</title>
+  <meta name="description" content="Technical support for the RentDue iOS app.">
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #9c6b1f;
+      --border: #e5e7eb;
+      --link: #2563eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #faf7f2 0%, var(--bg) 45%);
+      line-height: 1.6;
+    }
+    .container {
+      width: min(920px, 92vw);
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+    }
+    h1, h2 { margin: 0 0 10px; line-height: 1.25; }
+    h1 { font-size: clamp(1.75rem, 3.4vw, 2.35rem); }
+    h2 { font-size: 1.2rem; margin-top: 22px; }
+    p, li { color: var(--text); }
+    .muted { color: var(--muted); }
+    .top-nav {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .top-nav a {
+      color: var(--link);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.8rem;
+      color: #fff;
+      background: var(--accent);
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+    ul { margin-top: 8px; padding-left: 20px; }
+    .faq dt {
+      margin-top: 12px;
+      font-weight: 700;
+    }
+    .faq dd {
+      margin: 4px 0 0;
+      color: var(--muted);
+    }
+    footer {
+      margin-top: 18px;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+    a { color: var(--link); }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <nav class="top-nav" aria-label="Legal and support links">
+      <a href="index.html">Support</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Use</a>
+    </nav>
+
+    <section class="card">
+      <span class="badge">RentDue Support</span>
+      <h1>Technical Support</h1>
+      <p class="muted">
+        This page provides support information for the RentDue iOS app (project name: RentCollect).
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        For help, account questions, or bug reports, contact:
+        <a href="mailto:support@rentdue.app">support@rentdue.app</a>
+      </p>
+      <p class="muted">Typical response time: 1-3 business days.</p>
+
+      <h2>Common Help Topics</h2>
+      <ul>
+        <li>How to add or edit properties, units, and leases</li>
+        <li>Managing receivables and marking rent as paid</li>
+        <li>Scanning and attaching lease contract files</li>
+        <li>Notification reminder setup and troubleshooting</li>
+        <li>Privacy, local data storage, and app permissions</li>
+      </ul>
+
+      <h2>Troubleshooting</h2>
+      <ul>
+        <li>Update to the latest iOS version supported by the App Store release.</li>
+        <li>Force close and reopen the app if a view appears stuck.</li>
+        <li>Confirm Camera/Photo permissions are enabled in iOS Settings if uploads fail.</li>
+        <li>Verify notifications are allowed in iOS Settings if reminders do not appear.</li>
+      </ul>
+
+      <h2>FAQ</h2>
+      <dl class="faq">
+        <dt>Where is my data stored?</dt>
+        <dd>Core app records are stored on your device. See the Privacy Policy for details.</dd>
+        <dt>Do you track me across apps or websites?</dt>
+        <dd>No. RentDue does not use cross-app tracking.</dd>
+        <dt>Can I delete my data?</dt>
+        <dd>Yes. You can delete records in the app, or remove the app from your device.</dd>
+      </dl>
+
+      <footer>
+        Last updated: February 24, 2026
+      </footer>
+    </section>
+  </main>
+</body>
+</html>
